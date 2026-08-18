@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.7-SNAPSHOT'
+    id 'fabric-loom' version '1.9-SNAPSHOT'
 }
 
 repositories {
@@ -17,11 +17,4 @@ dependencies {
 
 tasks.withType(JavaCompile).configureEach {
     options.release = 21
-}
-
-jar {
-    from "LICENSE"
-    manifest {
-        attributes 'MixinConfigs': 'mace-clicker.mixins.json'
-    }
 }
