@@ -15,9 +15,10 @@ jobs:
           java-version: '21'
       - name: Setup Gradle
         run: |
-          wget https://services.gradle.org/distributions/gradle-8.5-bin.zip
-          unzip gradle-8.5-bin.zip
-          echo "$PWD/gradle-8.5/bin" >> $GITHUB_PATH
+          wget https://services.gradle.org/distributions/gradle-8.11-bin.zip
+          unzip gradle-8.11-bin.zip
+          export PATH=$PWD/gradle-8.11/bin:$PATH
+          gradle --version
       - name: Build
         run: gradle build
       - uses: actions/upload-artifact@v4
