@@ -3,10 +3,11 @@ package com.you.maceclicker;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.settings.*;
-import net.minecraft.item.MaceItem;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
-import meteordevelopment.meteorclient.utils.player.FindItemResult;
-import meteordevelopment.meteorclient.utils.player.InvUtils;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
+import net.minecraft.util.Hand;
 
 public class MaceClickerModule extends Module {
     private final Setting<Integer> delay = settings.add(new IntSetting.Builder()
@@ -16,6 +17,8 @@ public class MaceClickerModule extends Module {
         .min(0).max(200).sliderMax(200).build()
     );
 
+    private long lastAttackTime = 0;
+
     public MaceClickerModule() {
         super(Category.Combat, "mace-clicker", "仅对 Mace 连点，无蓄力");
     }
@@ -24,14 +27,13 @@ public class MaceClickerModule extends Module {
     public void onTick() {
         if (mc.player == null || mc.target == null) return;
         if (!(mc.target instanceof LivingEntity target)) return;
-        if (!mc.player.getMainHandStack().getItem().getClass().equals(MaceItem.class)) return;
+        if (!mc.player.getMainHandStack().isOf(Items.MACE)) return;
 
-        // 自动切换 Mace
-        FindItemResult mace = InvUtils.findInHotbar(item -> item.getItem() instanceof MaceItem);
-        if (mace.found()) InvUtils.swap(mace.slot(), true);
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastAttackTime < delay.get()) return;
 
-        // 无蓄力直接攻击
         mc.interactionManager.attackEntity(mc.player, target);
-        mc.player.swingHand(); // 动画
+        mc.player.swingHand(Hand.MAIN_HAND);
+        lastAttackTime = currentTime;
     }
 }
