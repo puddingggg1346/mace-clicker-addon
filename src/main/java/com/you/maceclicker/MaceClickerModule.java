@@ -3,9 +3,7 @@ package com.you.maceclicker;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.settings.*;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 
@@ -20,20 +18,23 @@ public class MaceClickerModule extends Module {
     private long lastAttackTime = 0;
 
     public MaceClickerModule() {
-        super(Category.Combat, "mace-clicker", "仅对 Mace 连点，无蓄力");
+        super(Category.Combat, "mace-clicker", "仅对 Mace 连点");
     }
 
     @Override
     public void onTick() {
         if (mc.player == null || mc.target == null) return;
-        if (!(mc.target instanceof LivingEntity target)) return;
-        if (!mc.player.getMainHandStack().isOf(Items.MACE)) return;
+        if (!(mc.target instanceof LivingEntity)) return;
+        
+        // 检查主手是否是 Mace
+        var stack = mc.player.getMainHandStack();
+        if (!stack.getItem().equals(Items.MACE)) return;
 
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastAttackTime < delay.get()) return;
+        long now = System.currentTimeMillis();
+        if (now - lastAttackTime < delay.get()) return;
 
-        mc.interactionManager.attackEntity(mc.player, target);
+        mc.interactionManager.attackEntity(mc.player, mc.target);
         mc.player.swingHand(Hand.MAIN_HAND);
-        lastAttackTime = currentTime;
+        lastAttackTime = now;
     }
 }
